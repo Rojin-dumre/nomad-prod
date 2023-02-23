@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Display Host SNMP values</title>
+</head>
+<body>
+	<!-- <button onclick="displayHosts()">Display Host SNMP Values</button> -->
+	<div id="hosts"></div>
+
+    <div id="host-details"></div>
+</body>
+</html>
+
+
+<script>
+function displayHosts() {
+	fetch("http://127.0.0.1:8000/api/snmp-list/")
+		.then(response => response.json())
+		.then(data => {
+			var hostsnmps = "";
+			for (var i = 0; i < data.length; i++) {
+				hostsnmps += "<a href ='#' onclick='displayHostById(" + data[i].id + "); return false;'>" + data[i].host_snmp + "</a><br><br>";  //example: <a href="#" onclick="displayHostById(2); return false;">R1</a><br>
+			}
+			document.getElementById("hosts").innerHTML = hostsnmps;
+		})
+		.catch(error => console.log(error));
+}
+
+function displayHostById(id) {
+    fetch("http://127.0.0.1:8000/api/snmp-detail/" + id)
+        .then(response => response.json())
+        .then(data => {
+            var host = "ID: " + data.id + "<br>" + "Community: " + data.community + "<br>" + "Host SNMP: " + data.host_snmp + "<br><br>" + "<button>Discovery</button>";
+            document.getElementById("host-details").innerHTML = host;
+        })
+        .catch(error => console.log(error));
+}
+
+displayHosts()
+
+
+</script>

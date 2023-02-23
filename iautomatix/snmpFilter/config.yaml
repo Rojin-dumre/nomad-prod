@@ -1,0 +1,13 @@
+---
+
+inventory:
+    plugin: SimpleInventory
+    options:
+        host_file: "/home/rojin/nomad-prod/iautomatix/snmpFilter/inventory/hosts.yaml"
+        group_file: "home/rojin/nomad-prod/iautomatix/snmpFilter/inventory/groups.yaml"
+        #defaults_file: "/home/rojin/virtualP/ProjectAutomation/inventory/defaults.yaml"
+
+runner:
+       plugin: threaded
+       options:
+            num_workers: 5

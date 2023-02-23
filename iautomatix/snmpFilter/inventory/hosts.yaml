@@ -1,0 +1,18 @@
+
+R1:
+   hostname: 10.1.1.1
+   port: 22
+   platform: ios
+   username: admin
+   password: cisco
+   groups:
+         - cisco_group
+
+R2:
+   hostname: 10.2.2.1
+   port: 22
+   platform: ios
+   username: admin
+   password: cisco
+   groups:
+         - cisco_group

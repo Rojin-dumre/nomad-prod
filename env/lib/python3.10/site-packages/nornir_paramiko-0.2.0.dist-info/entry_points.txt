@@ -1,0 +1,3 @@
+[nornir.plugins.connections]
+paramiko=nornir_paramiko.plugins.connections:Paramiko
+

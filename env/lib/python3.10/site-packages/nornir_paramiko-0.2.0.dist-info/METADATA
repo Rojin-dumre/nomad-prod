@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: nornir-paramiko
+Version: 0.2.0
+Summary: 
+Author: Devon Mar
+Author-email: devonm@mdmm.ca
+Requires-Python: >=3.6,<4.0
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Provides-Extra: docs
+Requires-Dist: nornir (>=3.0.0,<4.0.0)
+Requires-Dist: paramiko (>=2.7,<3.0)
+Requires-Dist: scp (>=0.13.3,<0.14.0)
+Requires-Dist: sphinx (>=3,<4); extra == "docs"
+Requires-Dist: sphinx-autodoc-typehints (>=1.12.0,<2.0.0); extra == "docs"
+Requires-Dist: sphinx-rtd-theme (>=0.5.2,<0.6.0); extra == "docs"
