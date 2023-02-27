@@ -8,6 +8,8 @@
 	<div id="hosts"></div>
 
     <div id="host-details"></div>
+
+	<div id="table-container"></div>
 </body>
 </html>
 
@@ -30,11 +32,52 @@ function displayHostById(id) {
     fetch("http://127.0.0.1:8000/api/snmp-detail/" + id)
         .then(response => response.json())
         .then(data => {
-            var host = "ID: " + data.id + "<br>" + "Community: " + data.community + "<br>" + "Host SNMP: " + data.host_snmp + "<br><br>" + "<button>Discovery</button>";
+			var host = "ID: " + data.id + "<br>" + "Community: " + data.community + "<br>" + "Host SNMP: " + data.host_snmp + "<br><br>" + "<button id='disc-button' onclick='discovery(\"" + data.host_snmp + "\");'>Discovery</button>";
             document.getElementById("host-details").innerHTML = host;
         })
         .catch(error => console.log(error));
 }
+
+
+function discovery(host_snmp) {
+	fetch("http://127.0.0.1:8000/api/snmp-tree/" + host_snmp)
+		.then(response => response.json())
+		.then(data => {
+			var general_descriptions = data.general_descriptions;
+			var interface_total = data.interface_total;
+			var interface_index = data.interface_index;
+			var interface_description = data.interface_description;
+			var interface_type = data.interface_type;
+			var interface_largest_datagram = data.interface_largest_datagram;
+			var interface_bandwidth = data.interface_bandwidth;
+			var interface_physical_address = data.interface_physical_address;
+			var interface_desired_state = data.interface_desired_state;
+			var interface_operational_state = data.interface_operational_state;
+			var interface_last_change = data.interface_last_change;
+
+			var table = "<table><tr><th>interface_total</th><th>interface_index</th><th>interface_description</th><th>interface_type</th><th>interface_largest_datagram</th><th>interface_bandwidth</th><th>interface_physical_address</th><th>interface_desired_state</th><th>interface_operational_state</th><th>interface_list_change</th></tr>";
+
+			for (var i =0; i < interface_index.length; i++) {
+				table += "<tr>";
+				table += "<td>" + interface_index[i] + "</td>";
+                table += "<td>" + interface_description[i] + "</td>";
+                table += "<td>" + interface_type[i] + "</td>";
+                table += "<td>" + interface_largest_datagram[i] + "</td>";
+                table += "<td>" + interface_bandwidth[i] + "</td>";
+                table += "<td>" + interface_physical_address[i] + "</td>";
+                table += "<td>" + interface_desired_state[i] + "</td>";
+                table += "<td>" + interface_operational_state[i] + "</td>";
+                table += "<td>" + interface_last_change[i] + "</td>";
+                table += "</tr>";
+			}
+
+			table += "</table>";
+			document.getElementById("table-container").innerHTML = table;
+		})
+
+		.catch(error => console.log(error));
+}
+
 
 displayHosts()
 

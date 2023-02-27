@@ -8,8 +8,10 @@ from .serializers import SnmpSerializer
 import os
 
 from pysnmp.hlapi import *
+from pysnmp.smi import builder, view, compiler
 
 from puresnmp import walk
+
 
 import re
 
@@ -75,38 +77,47 @@ def snmpDelete(request, pk):
 def snmpTree(request, host):
 
     path = os.getcwd()
-    configYamlPath = path + "/snmpFilter/config.yaml"
+    configYamlPath = os.path.join(path, "snmpFilter", "config.yaml")
+
+    # mibBuilder = builder.MibBuilder()
+    # compiler.addMibCompiler(mibBuilder, sources=['/home/rojin/nomad-prod/iautomatix/iautomatix'])
+    # mibBuilder.loadModules('RFC1213-MIB')
+    # mibView = view.MibViewController(mibBuilder)
+
+    # oid, label, suffix = mibView.getNodeName((1,3,6,1,2,1,1,3,0))
+    
+    # print(label)
 
 
 
     # Specify the OID you want to query
-    # oid = ObjectIdentifier('1.3.6.1.2.1.1')
+    oid = ObjectIdentifier('1.3.6.1.2.1.1')
 
-    # # Create a SNMP engine instance
-    # snmp_engine = SnmpEngine()
+    # Create a SNMP engine instance
+    snmp_engine = SnmpEngine()
 
-    # # Create a SNMP bulk iterator for the OID
-    # iterator = bulkCmd(
-    #     snmp_engine,
-    #     CommunityData('public'),  # Replace with your SNMP community string
-    #     UdpTransportTarget(('10.10.10.254', 161)),  # Replace with your SNMP agent's IP address and port
-    #     ContextData(),
-    #     0,  # Non-repeaters (0 for bulkCmd)
-    #     10,  # Max-repetitions (number of sub-IDs to retrieve in each iteration)
-    #     ObjectType(ObjectIdentity(oid)),
-    #     lexicographicMode=False
-    # )
-    # general_descriptions = {}
+    # Create a SNMP bulk iterator for the OID
+    iterator = bulkCmd(
+        snmp_engine,
+        CommunityData('public'),  # Replace with your SNMP community string
+        UdpTransportTarget(('10.10.10.254', 161)),  # Replace with your SNMP agent's IP address and port
+        ContextData(),
+        0,  # Non-repeaters (0 for bulkCmd)
+        10,  # Max-repetitions (number of sub-IDs to retrieve in each iteration)
+        ObjectType(ObjectIdentity(oid)),
+        lexicographicMode=False
+    )
+    general_descriptions = {}
 
-    # # Iterate over the OID and its sub-IDs
-    # for i, response in enumerate(iterator):
-    #     if i == 9:
-    #         break
-    #     for var_bind in response[3]:
-    #         oid_str = str(var_bind[0])
-    #         if not oid.isPrefixOf(ObjectIdentifier(oid_str)):  #checks if the oid represented by the "ObjectIdentifier" instnce "oid" is a prefix of the OID represented by the 'ObjectIdentifier' instance created from the var-bind OID string f the OID is not a prefix, it means that we have moved on to a different OID subtree, so the inner for loop is broken using the break statement.
-    #             break
-    #         general_descriptions.update({oid_str: var_bind[1].prettyPrint()})
+    # Iterate over the OID and its sub-IDs
+    for i, response in enumerate(iterator):
+        if i == 9:
+            break
+        for var_bind in response[3]:
+            oid_str = str(var_bind[0])
+            if not oid.isPrefixOf(ObjectIdentifier(oid_str)):  #checks if the oid represented by the "ObjectIdentifier" instnce "oid" is a prefix of the OID represented by the 'ObjectIdentifier' instance created from the var-bind OID string f the OID is not a prefix, it means that we have moved on to a different OID subtree, so the inner for loop is broken using the break statement.
+                break
+            general_descriptions.update({oid_str: var_bind[1].prettyPrint()})
 
     # print(general_descriptions)
 
@@ -176,50 +187,37 @@ def snmpTree(request, host):
             if new_oid_str != previous_oid_str:
                 # print("This is a break")   
                 j = j +1  
+                m = new_oid_str
 
-            if j == 1:
+            if m == '1.3.6.1.2.1.2.1':
                 total_interfaces.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 2:
+            if m == '1.3.6.1.2.1.2.2.1.1':
                 interface_index.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 3:
+            if m == '1.3.6.1.2.1.2.2.1.2':
                 interface_description.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 4:
+            if m == '1.3.6.1.2.1.2.2.1.3':
                 interface_type.update({oid_str: var_bind[1].prettyPrint()})
             
-            if j == 5:
+            if m == '1.3.6.1.2.1.2.2.1.4':
                 interface_largest_datagram.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 6:
+            if m == '1.3.6.1.2.1.2.2.1.5':
                 interface_bandwidth.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 7:
+            if m == '1.3.6.1.2.1.2.2.1.6':
                 interface_physical_address.update({oid_str: var_bind[1].prettyPrint()})
             
-            if j == 8:
+            if m == '1.3.6.1.2.1.2.2.1.7':
                 interface_desired_state.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 9:
+            if m == '1.3.6.1.2.1.2.2.1.8':
                 interface_operational_state.update({oid_str: var_bind[1].prettyPrint()})
 
-            if j == 10:
+            if m == '1.3.6.1.2.1.2.2.1.9':
                 interface_last_change.update({oid_str: var_bind[1].prettyPrint()})
-            
-            if j == 11:
-                interface_octets_in.update({oid_str: var_bind[1].prettyPrint()})
-            
-            if j == 12:
-                interface_unicast_packets_in.update({oid_str: var_bind[1].prettyPrint()})
-            
-            if j == 13:
-                interface_inbound_discards.update({oid_str: var_bind[1].prettyPrint()})
-
-                       
-
-
-
             
 
             
@@ -233,7 +231,9 @@ def snmpTree(request, host):
     
 
     response_data = {
+        'general_descriptions': json.dumps(general_descriptions),
         'interface_total': json.dumps(list(total_interfaces.values())),
+        'interface_index': json.dumps(list(interface_index.values())),
         'interface_description': json.dumps(list(interface_description.values())),
         'interface_type': json.dumps(list(interface_type.values())),
         'interface_largest_datagram': json.dumps(list(interface_largest_datagram.values())),
@@ -242,11 +242,6 @@ def snmpTree(request, host):
         'interface_desired_state': json.dumps(list(interface_desired_state.values())),
         'interface_operational_state': json.dumps(list(interface_operational_state.values())),
         'interface_last_change': json.dumps(list(interface_last_change.values())),
-        'interface_octets_in': json.dumps(list(interface_octets_in.values())),
-        'interface_unicast_packets_in': json.dumps(list(interface_unicast_packets_in.values())),
-        'interface_inbound_discards': json_dumps(list(interface_inbound_discards.values()))
-
-
 
     }
 
